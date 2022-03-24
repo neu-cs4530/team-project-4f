@@ -46,4 +46,9 @@ export default interface CoveyTownListener {
    * @param message the new chat message
    */
   onChatMessage(message: ChatMessage): void;
+
+  /**
+   * Called when the 'shift' key is pressed to enable/disable sprinting
+   */
+  onSprintToggled(): void;
 }
