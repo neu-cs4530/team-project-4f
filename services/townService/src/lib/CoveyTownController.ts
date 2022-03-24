@@ -276,6 +276,11 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onChatMessage(message));
   }
 
+  onSprintToggled(): void {
+    this._listeners.forEach(listener => listener.onSprintToggled());
+    // TODO: Add call that toggles the sprinting (Task-14)
+  }
+
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
    * session token is not valid.
