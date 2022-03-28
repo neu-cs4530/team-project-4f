@@ -79,6 +79,9 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  //TODO: Change type to match task-3
+  private _fastTravelAreas: string[] = [];
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
     this._capacity = 50;
@@ -207,6 +210,30 @@ export default class CoveyTownController {
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
     return true;
+  }
+
+  // TODO: Change type and add functionality
+  addFastTravelArea(_fastTravelArea: string): boolean {
+
+    // Check overlap with others, if overlap return false
+
+    // Check ID is not equal to any other
+
+    // Otherwise add it to list 
+
+    // Notify all listeners of the addition (task-7)
+
+    return true;
+  }
+
+  // TODO: Return type should be updated so it matches type in task-3
+  removeFastTravelArea(_fastTravelAreaID: string): string {
+    // Check to see if fastTravelLoc with the given ID is in the list,
+    // if so then remove it and return  it
+
+    // finally notify the listeners that a location was removed (task-7)
+
+    return '';
   }
 
   /**
