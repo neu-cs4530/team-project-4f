@@ -11,40 +11,28 @@ import { BoundingBox } from '../client/TownsServiceClient';
  */
 export default class FastTravelLocation {
 
-  get capacity(): number {
-    return this._capacity;
-  }
 
-  get players(): Player[] {
-    return this._players;
-  }
 
   get FTLName(): string {
     return this._FTLName;
   }
 
-  get isFullyOccupied(): boolean {
-      return this._isFullyOccupied;
+
+
+  // Prob need a list unaccessable of location?
+  get location(): BoundingBox {
+    return this._location;
   }
 
-  //   Prob need a list unaccessable of location?
-  //   get isValidLocation(): boolean {
-  //       return this._isValidLocation;
-  //   }
 
 
-  /** The list of players currently in the FTL * */
-  private _players: Player[] = [];
-
+  private _location: BoundingBox;
   private _FTLName: string;
 
-  private _isFullyOccupied: boolean;
 
-  private _capacity: number;
 
-  constructor(FTLName: string) {
-    this._capacity = 10;            // some random magic number
-    this._isFullyOccupied = false;  // not fully occupied by default 
+  constructor(FTLName: string, location: BoundingBox) {
+    this._location = location;
     this._FTLName = FTLName;
   }
 
