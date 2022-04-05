@@ -10,6 +10,9 @@ import { BoundingBox } from '../client/TownsServiceClient';
  * can occur (e.g. generate a fast travel location(FTL), or delete a FTL)
  */
 export default class FastTravelLocation {
+  
+  private _location: BoundingBox;
+  private _FTLName: string;
 
   get FTLName(): string {
     return this._FTLName;
@@ -19,9 +22,6 @@ export default class FastTravelLocation {
   get location(): BoundingBox {
     return this._location;
   }
-
-  private _location: BoundingBox;
-  private _FTLName: string;
 
   constructor(FTLName: string, location: BoundingBox) {
     this._location = location;
