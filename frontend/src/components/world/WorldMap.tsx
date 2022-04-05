@@ -233,7 +233,7 @@ class CoveyGameScene extends Phaser.Scene {
    */
   // TODO: shift key reference
   getSprintStatus() {
-    return !!this.cursors.find(keySet => keySet.shift?.isDown);
+    return this.cursors.find(keySet => keySet.shift?.isDown);
   }
 
   update() {
