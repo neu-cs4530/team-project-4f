@@ -1,8 +1,3 @@
-import CoveyTownController from './CoveyTownController';
-import { CoveyTownList } from '../CoveyTypes';
-import Player from '../types/Player';
-import PlayerSession from '../types/PlayerSession';
-import CoveyTownListener from '../types/CoveyTownListener';
 import { BoundingBox } from '../client/TownsServiceClient';
 
 /**
@@ -12,6 +7,7 @@ import { BoundingBox } from '../client/TownsServiceClient';
 export default class FastTravelLocation {
   
   private _location: BoundingBox;
+
   private _FTLName: string;
 
   get FTLName(): string {
