@@ -4,6 +4,7 @@ import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
+import FastTravelLocation from './FastTravelLocation';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
 
@@ -78,6 +79,8 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+
+  private _fastTravelAreas: FastTravelLocation[] = [];
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -207,6 +210,34 @@ export default class CoveyTownController {
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
     return true;
+  }
+
+  addFastTravelArea(_fastTravelArea: FastTravelLocation): boolean {
+
+    if (this._fastTravelAreas.find(
+      existingArea => existingArea.FTLName === _fastTravelArea.FTLName,
+    ))
+      return false;
+    if (this._fastTravelAreas.find(existingArea => 
+      CoveyTownController.boxesOverlap(existingArea.location, _fastTravelArea.location)) !== undefined){
+      return false;
+    }
+
+    this._fastTravelAreas.push(_fastTravelArea);
+    // Notify all listeners of the addition (task-7)
+
+    return true;
+  }
+
+  removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
+
+    let target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName);
+
+    this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
+
+    // finally notify the listeners that a location was removed (task-7)
+
+    return target;
   }
 
   /**
