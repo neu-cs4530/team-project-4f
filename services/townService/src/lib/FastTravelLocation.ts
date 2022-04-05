@@ -11,25 +11,17 @@ import { BoundingBox } from '../client/TownsServiceClient';
  */
 export default class FastTravelLocation {
 
-
-
   get FTLName(): string {
     return this._FTLName;
   }
-
-
 
   // Prob need a list unaccessable of location?
   get location(): BoundingBox {
     return this._location;
   }
 
-
-
   private _location: BoundingBox;
   private _FTLName: string;
-
-
 
   constructor(FTLName: string, location: BoundingBox) {
     this._location = location;

@@ -4,6 +4,7 @@ import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
+import FastTravelLocation from './FastTravelLocation';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
 
@@ -79,8 +80,7 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  //TODO: Change type to match task-3
-  private _fastTravelAreas: string[] = [];
+  private _fastTravelAreas: FastTravelLocation[] = [];
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -212,28 +212,32 @@ export default class CoveyTownController {
     return true;
   }
 
-  // TODO: Change type and add functionality
-  addFastTravelArea(_fastTravelArea: string): boolean {
+  addFastTravelArea(_fastTravelArea: FastTravelLocation): boolean {
 
-    // Check overlap with others, if overlap return false
+    if (this._fastTravelAreas.find(
+      existingArea => existingArea.FTLName === _fastTravelArea.FTLName,
+    ))
+      return false;
+    if (this._fastTravelAreas.find(existingArea => 
+      CoveyTownController.boxesOverlap(existingArea.location, _fastTravelArea.location)) !== undefined){
+      return false;
+    }
 
-    // Check ID is not equal to any other
-
-    // Otherwise add it to list 
-
+    this._fastTravelAreas.push(_fastTravelArea);
     // Notify all listeners of the addition (task-7)
 
     return true;
   }
 
-  // TODO: Return type should be updated so it matches type in task-3
-  removeFastTravelArea(_fastTravelAreaID: string): string {
-    // Check to see if fastTravelLoc with the given ID is in the list,
-    // if so then remove it and return  it
+  removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
+
+    let target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName);
+
+    this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
 
     // finally notify the listeners that a location was removed (task-7)
 
-    return '';
+    return target;
   }
 
   /**
