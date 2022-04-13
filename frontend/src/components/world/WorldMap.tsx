@@ -1,3 +1,4 @@
+import { type } from 'os';
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
@@ -27,6 +28,7 @@ class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     label: Phaser.GameObjects.Text;
+    sprintingLabel: Phaser.GameObjects.Text;
   };
 
   private myPlayerID: string;
@@ -251,9 +253,11 @@ class CoveyGameScene extends Phaser.Scene {
       body.setVelocity(0);
       let targetVelocity;
       if (this.getSprintStatus()) {
-        targetVelocity = sprintSpeed
+        targetVelocity = sprintSpeed;
+        this.player.sprintingLabel.setVisible(true);
       } else {
-        targetVelocity = walkSpeed
+        targetVelocity = walkSpeed;
+        this.player.sprintingLabel.setVisible(false);
       }
 
       const primaryDirection = this.getNewMovementDirection();
@@ -294,6 +298,8 @@ class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
+      this.player.sprintingLabel.setX(body.x - 30);
+      this.player.sprintingLabel.setY(body.y - 40);
       if (
         !this.lastLocation ||
         this.lastLocation.x !== body.x ||
@@ -496,9 +502,16 @@ class CoveyGameScene extends Phaser.Scene {
       // padding: {x: 20, y: 10},
       backgroundColor: '#ffffff',
     });
+    const sprintingLabel = this.add.text(spawnPoint.x , spawnPoint.y - 40, 'sprinting', {
+      font: '18px monospace',
+      color: '#000000',
+      // padding: {x: 10, y: 10},
+      backgroundColor: '#ffffff',
+    });
     this.player = {
       sprite,
       label,
+      sprintingLabel
     };
 
     /* Configure physics overlap behavior for when the player steps into
