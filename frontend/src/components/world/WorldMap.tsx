@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
+import FastTravelLocation from '../../../../services/townService/src/lib/FastTravelLocation'
+import getFastTravelAreas from './FastTravelConstants'
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useConversationAreas from '../../hooks/useConversationAreas';
@@ -34,6 +36,8 @@ class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
+
+  private fastTravelLocations: FastTravelLocation[] = getFastTravelAreas();
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -332,6 +336,8 @@ class CoveyGameScene extends Phaser.Scene {
       }
     }
   }
+
+  
 
   create() {
     const map = this.make.tilemap({ key: 'map' });
@@ -674,6 +680,16 @@ class CoveyGameScene extends Phaser.Scene {
       this.previouslyCapturedKeys = [];
     }
   }
+}
+
+export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
+  player.location = { 
+    x: ftl.location.x, 
+    y: ftl.location.y,
+    rotation: player.location?.rotation || 'front', 
+    moving: player.location?.moving || false
+  };
+  return true;
 }
 
 export default function WorldMap(): JSX.Element {
