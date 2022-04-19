@@ -337,18 +337,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
-    player.location = { 
-      x: ftl.location.x, 
-      y: ftl.location.y,
-      rotation: player.location?.rotation || 'front', 
-      moving: player.location?.moving || false
-    };
-
-    this.updatePlayerLocation(player);
-
-    return true;
-  }
+  
 
   create() {
     const map = this.make.tilemap({ key: 'map' });
@@ -691,6 +680,16 @@ class CoveyGameScene extends Phaser.Scene {
       this.previouslyCapturedKeys = [];
     }
   }
+}
+
+export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
+  player.location = { 
+    x: ftl.location.x, 
+    y: ftl.location.y,
+    rotation: player.location?.rotation || 'front', 
+    moving: player.location?.moving || false
+  };
+  return true;
 }
 
 export default function WorldMap(): JSX.Element {
