@@ -746,45 +746,41 @@ export default function WorldMap(): JSX.Element {
 
   const handleMapButtonClick = () => {
     console.log("HI");
-    const element = document.getElementById('map-popup');
-    if (element && !mapActive) {
+    const minimap = document.getElementById('mini-map-container');
+    const map = document.getElementById('map-container');
+
+
+    if (minimap && !mapActive && map) {
       console.log("TRUE");
-      element.style.opacity = '1';
+      minimap.style.opacity = '1';
       setMapActive(true);
+      map.style.filter = 'blur(5px)';
     }
 
-    if (element && mapActive) {
+    if (minimap && mapActive && map) {
       console.log("False");
-      element.style.opacity = '0';
+      minimap.style.opacity = '0';
       setMapActive(false);
+      map.style.filter = 'blur(0px)';
     }
-
-
   }
 
   const handleMapButtonClickTest = () => {
-    console.log("HELLO FROM MAP");
-  }
+
+  };
 
   return (
     <div id='app-container'>
       {newConversationModal}
       <div id='map-container' />
-      <div id='map-popup'            
-            onClick={handleMapButtonClickTest} 
-            onKeyDown={handleMapButtonClickTest}
-            role="button"
-            style={{opacity: 0}}
-            tabIndex={-1} >  map goes here
-      </div>
       <div id='social-container'>
         <SocialSidebar />
       </div>
       <div id='map-button' role="button" 
             onClick={handleMapButtonClick} 
-            onKeyDown={handleMapButtonClick}
+            onKeyDown={handleMapButtonClickTest}
             tabIndex={0}>
-              Click Here For Map
+              Toggle Map
               <MiniMap />
       </div>
     </div>

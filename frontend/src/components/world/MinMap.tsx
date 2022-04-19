@@ -242,36 +242,36 @@ class CoveyGameScene extends Phaser.Scene {
       body.setVelocity(0);
 
       const primaryDirection = this.getNewMovementDirection();
-      // switch (primaryDirection) {
-      //   case 'left':
-      //     body.setVelocityX(-speed);
-      //     this.player.sprite.anims.play('misa-left-walk', true);
-      //     break;
-      //   case 'right':
-      //     body.setVelocityX(speed);
-      //     this.player.sprite.anims.play('misa-right-walk', true);
-      //     break;
-      //   case 'front':
-      //     body.setVelocityY(speed);
-      //     this.player.sprite.anims.play('misa-front-walk', true);
-      //     break;
-      //   case 'back':
-      //     body.setVelocityY(-speed);
-      //     this.player.sprite.anims.play('misa-back-walk', true);
-      //     break;
-      //   default:
-      //     // Not moving
-      //     this.player.sprite.anims.stop();
-      //     // If we were moving, pick and idle frame to use
-      //     if (prevVelocity.x < 0) {
-      //       this.player.sprite.setTexture('atlas', 'misa-left');
-      //     } else if (prevVelocity.x > 0) {
-      //       this.player.sprite.setTexture('atlas', 'misa-right');
-      //     } else if (prevVelocity.y < 0) {
-      //       this.player.sprite.setTexture('atlas', 'misa-back');
-      //     } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
-      //     break;
-      // }
+      switch (primaryDirection) {
+        case 'left':
+          body.setVelocityX(-speed);
+          this.player.sprite.anims.play('misa-left-walk', true);
+          break;
+        case 'right':
+          body.setVelocityX(speed);
+          this.player.sprite.anims.play('misa-right-walk', true);
+          break;
+        case 'front':
+          body.setVelocityY(speed);
+          this.player.sprite.anims.play('misa-front-walk', true);
+          break;
+        case 'back':
+          body.setVelocityY(-speed);
+          this.player.sprite.anims.play('misa-back-walk', true);
+          break;
+        default:
+          // Not moving
+          this.player.sprite.anims.stop();
+          // If we were moving, pick and idle frame to use
+          if (prevVelocity.x < 0) {
+            this.player.sprite.setTexture('atlas', 'misa-left');
+          } else if (prevVelocity.x > 0) {
+            this.player.sprite.setTexture('atlas', 'misa-right');
+          } else if (prevVelocity.y < 0) {
+            this.player.sprite.setTexture('atlas', 'misa-back');
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
+          break;
+      }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
       this.player.sprite.body.velocity.normalize().scale(speed);
@@ -353,10 +353,10 @@ class CoveyGameScene extends Phaser.Scene {
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
      it a depth. Higher depths will sit on top of lower depth objects.
      */
+    belowLayer.setDepth(0);
     worldLayer.setDepth(5);
     aboveLayer.setDepth(10);
     veryAboveLayer.setDepth(15);
-
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
     const spawnPoint = (map.findObject(
@@ -594,7 +594,7 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    const mapcamera = this.cameras.add(0, 0,3000, 620).setZoom(.4).setName('mini');
+    const mapcamera = this.cameras.add(0, 0,3000, 400).setZoom(.3).setName('mini');
     mapcamera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player, false, .2, .2)
 
@@ -603,7 +603,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      // this.players.forEach(p => this.updatePlayerLocation(p));
+      this.players.forEach(p => this.updatePlayerLocation(p));
     }
     // Call any listeners that are waiting for the game to be initialized
     this._onGameReadyListeners.forEach(listener => listener());
@@ -648,7 +648,7 @@ export default function WorldMap(): JSX.Element {
     const config = {
       type: Phaser.AUTO,
       backgroundColor: '#000000',
-      parent: 'map-container',
+      parent: 'mini-map-container',
       pixelArt: true,
       autoRound: 10,
       minWidth: 500,
@@ -662,6 +662,7 @@ export default function WorldMap(): JSX.Element {
         },
       },
     };
+
 
     const game = new Phaser.Game(config);
     if (video) {
@@ -680,19 +681,19 @@ export default function WorldMap(): JSX.Element {
     };
   }, [video, emitMovement, setNewConversation, myPlayerID]);
 
-  // useEffect(() => {
-  //   const movementDispatcher = (player: ServerPlayer) => {
-  //     gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
-  //   };
-  //   playerMovementCallbacks.push(movementDispatcher);
-  //   return () => {
-  //     playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
-  //   };
-  // }, [gameScene, playerMovementCallbacks]);
+  useEffect(() => {
+    const movementDispatcher = (player: ServerPlayer) => {
+      gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
+    };
+    playerMovementCallbacks.push(movementDispatcher);
+    return () => {
+      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
+    };
+  }, [gameScene, playerMovementCallbacks]);
 
-  // useEffect(() => {
-  //   gameScene?.updatePlayersLocations(players);
-  // }, [gameScene, players]);
+  useEffect(() => {
+    gameScene?.updatePlayersLocations(players);
+  }, [gameScene, players]);
 
   // useEffect(() => {
   //   gameScene?.updateConversationAreas(conversationAreas);
@@ -725,6 +726,6 @@ export default function WorldMap(): JSX.Element {
   // }, [video, newConversation, setNewConversation]);
 
   return (
-      <div id='mini-map-container' />
+      <div id='mini-map-container'/>
   );
 }
