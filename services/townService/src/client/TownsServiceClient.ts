@@ -22,6 +22,11 @@ export type ServerConversationArea = {
   boundingBox: BoundingBox;
 };
 
+export type FastTravelLocation = {
+  name: string;
+  boundingBox: BoundingBox;
+};
+
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -53,6 +58,8 @@ export interface TownJoinResponse {
   isPubliclyListed: boolean;
   /** Conversation areas */
   conversationAreas: ServerConversationArea[];
+  /** Fast Travel Location */
+  fastTravelLocation: FastTravelLocation[];
 }
 
 /**
@@ -106,6 +113,17 @@ export interface ConversationAreaCreateRequest {
   sessionToken: string;
   conversationArea: ServerConversationArea;
 }
+
+/** 
+ *  Payload sent by the client to create a new Fast travel location
+ * 
+ */
+ export interface FastTravelLocationCrateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  FastTravelLocation: ServerConversationArea;
+}
+ 
 
 /**
  * Envelope that wraps any response from the server
@@ -174,6 +192,11 @@ export default class TownsServiceClient {
   }
 
   async createConversationArea(requestData: ConversationAreaCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createFastTravelLocation(requestData: FastTravelLocationCrateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }

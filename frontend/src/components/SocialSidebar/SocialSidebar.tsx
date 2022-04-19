@@ -1,5 +1,6 @@
 import { Heading, StackDivider, VStack } from '@chakra-ui/react';
 import React from 'react';
+import FastTravelLocationList from './FastTravelLocationList';
 import ConversationAreasList from './ConversationAreasList';
 import PlayersList from './PlayersList';
 
@@ -17,6 +18,7 @@ export default function SocialSidebar(): JSX.Element {
           <Heading fontSize='xl' as='h1'>Players In This Town</Heading>
         <PlayersList />
         <ConversationAreasList />
+        <FastTravelLocationList/>
       </VStack>
     );
   }

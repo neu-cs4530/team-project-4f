@@ -1,9 +1,4 @@
-import CoveyTownController from './CoveyTownController';
-import { CoveyTownList } from '../CoveyTypes';
-import Player from '../types/Player';
-import PlayerSession from '../types/PlayerSession';
-import CoveyTownListener from '../types/CoveyTownListener';
-import { BoundingBox } from '../client/TownsServiceClient';
+import  BoundingBox  from '../classes/BoundingBox';
 
 /**
  * The FastTravelLocation implements the logic for each fast travel location: managing the various events that
