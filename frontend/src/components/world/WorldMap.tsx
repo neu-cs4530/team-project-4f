@@ -1,5 +1,5 @@
-import { type } from 'os';
 import Phaser from 'phaser';
+import { Heading, StackDivider, VStack, Box, ListItem, UnorderedList, Button } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
@@ -26,7 +26,7 @@ type ConversationGameObjects = {
   conversationArea?: ConversationArea;
 };
 
-class CoveyGameScene extends Phaser.Scene {
+export class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     label: Phaser.GameObjects.Text;
@@ -144,6 +144,13 @@ class CoveyGameScene extends Phaser.Scene {
         eachArea.conversationArea = undefined;
       }
     });
+  }
+
+  fastTravel(ftl: FastTravelLocation) {
+    if(this.player) {
+      this.player.sprite.x = ftl.location.x;
+      this.player.sprite.y = ftl.location.y;
+    }
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -696,6 +703,11 @@ class CoveyGameScene extends Phaser.Scene {
 }
 
 export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
+  if(player.sprite) {
+    console.log('Move Sprite')
+    player.sprite.x = ftl.location.x;
+    player.sprite.y = ftl.location.x;
+  }
   player.location = { 
     x: ftl.location.x, 
     y: ftl.location.y,
@@ -793,12 +805,42 @@ export default function WorldMap(): JSX.Element {
     return <></>;
   }, [video, newConversation, setNewConversation]);
 
+  const FTLs = getFastTravelAreas();
+  const myPlayer = players.find(player => player.id === myPlayerID);
+
+  const HandleButonCLick = (FTL: FastTravelLocation) => {
+    gameScene?.fastTravel(FTL);
+  }
+
   return (
     <div id='app-container'>
       {newConversationModal}
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />
+      </div>
+      <div id='ftl-container'>
+      <VStack align="left"
+        spacing={2}
+        border='2px'
+        padding={2}
+        marginLeft={2}
+        borderColor='gray.500'
+        height='100%'
+        divider={<StackDivider borderColor='gray.200' />}
+        borderRadius='4px'>
+          <Heading fontSize='xl' as='h1'>Fast Travel Locations</Heading>
+      <Box>
+          <UnorderedList>
+            {FTLs.map(FTL => (
+              <ListItem key={FTL.FTLName}> <Button key={FTL.FTLName} colorScheme='blue' onClick={() => HandleButonCLick(FTL)}>
+                {FTL.FTLName}
+              </Button>
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </Box>
+        </VStack>
       </div>
     </div>
   );
