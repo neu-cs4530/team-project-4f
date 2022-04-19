@@ -1,4 +1,4 @@
-import FastTravelLocation from "../../../../services/townService/src/lib/FastTravelLocation";
+import FastTravelLocation from "../../classes/FastTravelLocation";
 import BoundingBox from "../../classes/BoundingBox";
 
 const TRICERATOPS_FTL = new FastTravelLocation('Triceratops', new BoundingBox(420, 225, 5, 5));
