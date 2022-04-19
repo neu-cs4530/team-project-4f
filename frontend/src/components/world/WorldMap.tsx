@@ -11,7 +11,7 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
-
+import MiniMap from './MinMap';
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
@@ -228,50 +228,35 @@ class CoveyGameScene extends Phaser.Scene {
     return undefined;
   }
 
-  /**
-   * Check if the shift key is held down
-   */
-  // TODO: shift key reference
-  getSprintStatus() {
-    return this.cursors.find(keySet => keySet.shift?.isDown);
-  }
-
   update() {
     if (this.paused) {
       return;
     }
     if (this.player && this.cursors) {
-      const walkSpeed = 175;
-      const sprintSpeed = 250;
+      const speed = 175;
 
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
 
       // Stop any previous movement from the last frame
       body.setVelocity(0);
-      let targetVelocity;
-      if (this.getSprintStatus()) {
-        targetVelocity = sprintSpeed
-      } else {
-        targetVelocity = walkSpeed
-      }
 
       const primaryDirection = this.getNewMovementDirection();
       switch (primaryDirection) {
         case 'left':
-          body.setVelocityX(-targetVelocity);
+          body.setVelocityX(-speed);
           this.player.sprite.anims.play('misa-left-walk', true);
           break;
         case 'right':
-          body.setVelocityX(targetVelocity);
+          body.setVelocityX(speed);
           this.player.sprite.anims.play('misa-right-walk', true);
           break;
         case 'front':
-          body.setVelocityY(targetVelocity);
+          body.setVelocityY(speed);
           this.player.sprite.anims.play('misa-front-walk', true);
           break;
         case 'back':
-          body.setVelocityY(-targetVelocity);
+          body.setVelocityY(-speed);
           this.player.sprite.anims.play('misa-back-walk', true);
           break;
         default:
@@ -289,7 +274,7 @@ class CoveyGameScene extends Phaser.Scene {
       }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize().scale(targetVelocity);
+      this.player.sprite.body.velocity.normalize().scale(speed);
 
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
@@ -470,14 +455,6 @@ class CoveyGameScene extends Phaser.Scene {
           down: Phaser.Input.Keyboard.KeyCodes.J,
           left: Phaser.Input.Keyboard.KeyCodes.K,
           right: Phaser.Input.Keyboard.KeyCodes.L,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
-    this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
@@ -765,12 +742,50 @@ export default function WorldMap(): JSX.Element {
     return <></>;
   }, [video, newConversation, setNewConversation]);
 
+  const [mapActive, setMapActive] = useState(false);
+
+  const handleMapButtonClick = () => {
+    console.log("HI");
+    const element = document.getElementById('map-popup');
+    if (element && !mapActive) {
+      console.log("TRUE");
+      element.style.opacity = '1';
+      setMapActive(true);
+    }
+
+    if (element && mapActive) {
+      console.log("False");
+      element.style.opacity = '0';
+      setMapActive(false);
+    }
+
+
+  }
+
+  const handleMapButtonClickTest = () => {
+    console.log("HELLO FROM MAP");
+  }
+
   return (
     <div id='app-container'>
       {newConversationModal}
       <div id='map-container' />
+      <div id='map-popup'            
+            onClick={handleMapButtonClickTest} 
+            onKeyDown={handleMapButtonClickTest}
+            role="button"
+            style={{opacity: 0}}
+            tabIndex={-1} >  map goes here
+      </div>
       <div id='social-container'>
         <SocialSidebar />
+      </div>
+      <div id='map-button' role="button" 
+            onClick={handleMapButtonClick} 
+            onKeyDown={handleMapButtonClick}
+            tabIndex={0}>
+              Click Here For Map
+              <MiniMap />
       </div>
     </div>
   );
