@@ -232,12 +232,22 @@ class CoveyGameScene extends Phaser.Scene {
     return undefined;
   }
 
+   /**
+   * Check if the shift key is held down
+   */
+  //TODO: shift key reference
+  getSprintStatus() {
+    return !!this.cursors.find(keySet => keySet.shift?.isDown);
+  }
+
   update() {
     if (this.paused) {
       return;
     }
     if (this.player && this.cursors) {
       const speed = 175;
+      const walkSpeed = 175;
+      const sprintSpeed = 250;
 
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
@@ -245,22 +255,29 @@ class CoveyGameScene extends Phaser.Scene {
       // Stop any previous movement from the last frame
       body.setVelocity(0);
 
+      let targetVelocity;
+      if (this.getSprintStatus()) {
+        targetVelocity = sprintSpeed
+      } else {
+        targetVelocity = walkSpeed
+      }
+
       const primaryDirection = this.getNewMovementDirection();
       switch (primaryDirection) {
         case 'left':
-          body.setVelocityX(-speed);
+          body.setVelocityX(-targetVelocity);
           this.player.sprite.anims.play('misa-left-walk', true);
           break;
         case 'right':
-          body.setVelocityX(speed);
+          body.setVelocityX(targetVelocity);
           this.player.sprite.anims.play('misa-right-walk', true);
           break;
         case 'front':
-          body.setVelocityY(speed);
+          body.setVelocityY(targetVelocity);
           this.player.sprite.anims.play('misa-front-walk', true);
           break;
         case 'back':
-          body.setVelocityY(-speed);
+          body.setVelocityY(-targetVelocity);
           this.player.sprite.anims.play('misa-back-walk', true);
           break;
         default:
@@ -278,7 +295,7 @@ class CoveyGameScene extends Phaser.Scene {
       }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize().scale(speed);
+      this.player.sprite.body.velocity.normalize().scale(targetVelocity);
 
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
@@ -461,6 +478,14 @@ class CoveyGameScene extends Phaser.Scene {
           down: Phaser.Input.Keyboard.KeyCodes.J,
           left: Phaser.Input.Keyboard.KeyCodes.K,
           right: Phaser.Input.Keyboard.KeyCodes.L,
+        },
+        false,
+      ) as Phaser.Types.Input.Keyboard.CursorKeys,
+    );
+    this.cursors.push(
+      this.input.keyboard.addKeys(
+        {
+          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
