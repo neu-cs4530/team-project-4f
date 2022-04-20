@@ -254,7 +254,7 @@ export class CoveyGameScene extends Phaser.Scene {
       return;
     }
     if (this.player && this.cursors) {
-      const speed = 175;
+
       const walkSpeed = 175;
       const sprintSpeed = 250;
 
@@ -265,6 +265,7 @@ export class CoveyGameScene extends Phaser.Scene {
       body.setVelocity(0);
 
       let targetVelocity;
+
       if (this.getSprintStatus()) {
         targetVelocity = sprintSpeed
         this.player.sprintingLabel.setVisible(true);
@@ -707,7 +708,6 @@ export class CoveyGameScene extends Phaser.Scene {
 
 export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
   if(player.sprite) {
-    console.log('Move Sprite')
     player.sprite.x = ftl.location.x;
     player.sprite.y = ftl.location.x;
   }
@@ -811,20 +811,20 @@ export default function WorldMap(): JSX.Element {
 
 
   const handleMapButtonClick = () => {
-    console.log("HI");
+    
     const minimap = document.getElementById('mini-map-container');
     const map = document.getElementById('map-container');
 
 
     if (minimap && !mapActive && map) {
-      console.log("TRUE");
+      
       minimap.style.opacity = '1';
       setMapActive(true);
       map.style.filter = 'blur(5px)';
     }
 
     if (minimap && mapActive && map) {
-      console.log("False");
+      
       minimap.style.opacity = '0';
       setMapActive(false);
       map.style.filter = 'blur(0px)';
@@ -855,6 +855,7 @@ export default function WorldMap(): JSX.Element {
       tabIndex={0}>
         Toggle Map
         <MiniMap />
+      </div>
       <div id='ftl-container'>
       <VStack align="left"
         spacing={2}
@@ -878,7 +879,6 @@ export default function WorldMap(): JSX.Element {
         </Box>
         </VStack>
       </div>
-    </div>
     </div>
   );
 }
