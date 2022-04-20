@@ -807,6 +807,29 @@ export default function WorldMap(): JSX.Element {
     }
     return <></>;
   }, [video, newConversation, setNewConversation]);
+  const [mapActive, setMapActive] = useState(false);
+
+
+  const handleMapButtonClick = () => {
+    console.log("HI");
+    const minimap = document.getElementById('mini-map-container');
+    const map = document.getElementById('map-container');
+
+
+    if (minimap && !mapActive && map) {
+      console.log("TRUE");
+      minimap.style.opacity = '1';
+      setMapActive(true);
+      map.style.filter = 'blur(5px)';
+    }
+
+    if (minimap && mapActive && map) {
+      console.log("False");
+      minimap.style.opacity = '0';
+      setMapActive(false);
+      map.style.filter = 'blur(0px)';
+    }
+  }
 
   const FTLs = getFastTravelAreas();
   const myPlayer = players.find(player => player.id === myPlayerID);
@@ -815,6 +838,10 @@ export default function WorldMap(): JSX.Element {
     gameScene?.fastTravel(FTL);
   }
 
+  const handleMapButtonClickTest = () => {
+
+  };
+
   return (
     <div id='app-container'>
       {newConversationModal}
@@ -822,6 +849,12 @@ export default function WorldMap(): JSX.Element {
       <div id='social-container'>
         <SocialSidebar />
       </div>
+      <div id='map-button' role="button" 
+      onClick={handleMapButtonClick} 
+      onKeyDown={handleMapButtonClickTest}
+      tabIndex={0}>
+        Toggle Map
+        <MiniMap />
       <div id='ftl-container'>
       <VStack align="left"
         spacing={2}
@@ -845,6 +878,7 @@ export default function WorldMap(): JSX.Element {
         </Box>
         </VStack>
       </div>
+    </div>
     </div>
   );
 }
