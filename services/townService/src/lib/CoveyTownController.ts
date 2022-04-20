@@ -224,19 +224,20 @@ export default class CoveyTownController {
     }
 
     this._fastTravelAreas.push(_fastTravelArea);
-    // Notify all listeners of the addition (task-7)
+
+    this._listeners.forEach(listener => listener.onFastTravelAdded(_fastTravelArea));
 
     return true;
   }
 
   removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
 
-    let target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName);
-
+    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName) ?? new FastTravelLocation('', new BoundingBox(0, 0, 0, 0));
+   
     this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
-
-    // finally notify the listeners that a location was removed (task-7)
-
+    this._listeners.forEach(listener => listener.onFastTravelDeleted(target));
+    
+  
     return target;
   }
 
