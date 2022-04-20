@@ -1,5 +1,6 @@
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage } from '../CoveyTypes';
+import FastTravelLocation from '../lib/FastTravelLocation';
 import Player from './Player';
 
 /**
@@ -51,4 +52,22 @@ export default interface CoveyTownListener {
    * Called when the 'shift' key is pressed to enable/disable sprinting
    */
   onSprintToggled(): void;
+
+  /**
+   * Called when a fast travel location is added
+   */
+  onFastTravelAdded(FastTravelLocation: FastTravelLocation): void;
+
+
+  /**
+   * Called when a fast travel location is deleted
+   */
+  onFastTravelDeleted(FastTravelLocation: FastTravelLocation): void;
+
+  /**
+   * Called when a fast travel location is used
+   */
+  onFastTravelUsed(FastTravelLocation: FastTravelLocation): void;
+
+
 }

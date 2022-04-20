@@ -6,6 +6,8 @@ import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
+import FastTravelLocation from '../lib/FastTravelLocation';
+
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -230,6 +232,15 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onSprintToggled(){
       socket.emit('sprintToggled');
+    },
+    onFastTravelAdded(fastTravelLocation: FastTravelLocation){
+      socket.emit('sprintToggled', fastTravelLocation);
+    },
+    onFastTravelDeleted(fastTravelLocation: FastTravelLocation){
+      socket.emit('sprintToggled', fastTravelLocation);
+    },
+    onFastTravelUsed(fastTravelLocation: FastTravelLocation){
+      socket.emit('sprintToggled', fastTravelLocation);
     },
   };
 }
