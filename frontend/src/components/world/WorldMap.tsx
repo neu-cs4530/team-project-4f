@@ -246,6 +246,7 @@ export class CoveyGameScene extends Phaser.Scene {
    */
   getSprintStatus() {
     return this.cursors.find(keySet => keySet.shift?.isDown);
+
   }
 
   update() {
@@ -266,13 +267,13 @@ export class CoveyGameScene extends Phaser.Scene {
       let targetVelocity;
       if (this.getSprintStatus()) {
         targetVelocity = sprintSpeed
-
         this.player.sprintingLabel.setVisible(true);
         this.player.sprintingLabel.setX(body.x - 30);
         this.player.sprintingLabel.setY(body.y - 40);
       } else {
         targetVelocity = walkSpeed
         this.player.sprintingLabel.setVisible(false);
+
       }
 
       const primaryDirection = this.getNewMovementDirection();
