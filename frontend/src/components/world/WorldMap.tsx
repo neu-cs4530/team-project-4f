@@ -244,9 +244,8 @@ export class CoveyGameScene extends Phaser.Scene {
    /**
    * Check if the shift key is held down
    */
-  //TODO: shift key reference
   getSprintStatus() {
-    return !!this.cursors.find(keySet => keySet.shift?.isDown);
+    return this.cursors.find(keySet => keySet.shift?.isDown);
   }
 
   update() {
@@ -267,8 +266,13 @@ export class CoveyGameScene extends Phaser.Scene {
       let targetVelocity;
       if (this.getSprintStatus()) {
         targetVelocity = sprintSpeed
+
+        this.player.sprintingLabel.setVisible(true);
+        this.player.sprintingLabel.setX(body.x - 30);
+        this.player.sprintingLabel.setY(body.y - 40);
       } else {
         targetVelocity = walkSpeed
+        this.player.sprintingLabel.setVisible(false);
       }
 
       const primaryDirection = this.getNewMovementDirection();
@@ -309,8 +313,6 @@ export class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
-      this.player.sprintingLabel.setX(body.x - 30);
-      this.player.sprintingLabel.setY(body.y - 40);
       if (
         !this.lastLocation ||
         this.lastLocation.x !== body.x ||
