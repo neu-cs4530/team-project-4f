@@ -2,8 +2,6 @@ import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
-import FastTravelLocation from '../../../../services/townService/src/lib/FastTravelLocation'
-import getFastTravelAreas from './FastTravelConstants'
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useConversationAreas from '../../hooks/useConversationAreas';
@@ -13,7 +11,7 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
-import MiniMap from './MinMap';
+
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
@@ -36,8 +34,6 @@ class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
-
-  private fastTravelLocations: FastTravelLocation[] = getFastTravelAreas();
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -322,10 +318,8 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  
-
   create() {
-    const map = this.make.tilemap({ key: 'map' });
+    const map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
 
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
@@ -359,10 +353,10 @@ class CoveyGameScene extends Phaser.Scene {
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
      it a depth. Higher depths will sit on top of lower depth objects.
      */
+    belowLayer.setDepth(0);
     worldLayer.setDepth(5);
     aboveLayer.setDepth(10);
     veryAboveLayer.setDepth(15);
-
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
     const spawnPoint = (map.findObject(
@@ -600,28 +594,10 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    const camera = this.cameras.main;
-    camera.startFollow(this.player.sprite);
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    const mapcamera = this.cameras.add(0, 0,3000, 400).setZoom(.3).setName('mini');
+    mapcamera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.startFollow(this.player, false, .2, .2)
 
-    // Help text that has a "fixed" position on the screen
-    this.add
-      .text(
-        16,
-        16,
-        `Arrow keys to move`,
-        {
-          font: '18px monospace',
-          color: '#000000',
-          padding: {
-            x: 20,
-            y: 10,
-          },
-          backgroundColor: '#ffffff',
-        },
-      )
-      .setScrollFactor(0)
-      .setDepth(30);
 
     this.ready = true;
     if (this.players.length) {
@@ -659,16 +635,6 @@ class CoveyGameScene extends Phaser.Scene {
   }
 }
 
-export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
-  player.location = { 
-    x: ftl.location.x, 
-    y: ftl.location.y,
-    rotation: player.location?.rotation || 'front', 
-    moving: player.location?.moving || false
-  };
-  return true;
-}
-
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const { emitMovement, myPlayerID } = useCoveyAppState();
@@ -682,13 +648,13 @@ export default function WorldMap(): JSX.Element {
     const config = {
       type: Phaser.AUTO,
       backgroundColor: '#000000',
-      parent: 'map-container',
+      parent: 'mini-map-container',
       pixelArt: true,
       autoRound: 10,
-      minWidth: 800,
+      minWidth: 500,
       fps: { target: 30 },
       powerPreference: 'high-performance',
-      minHeight: 600,
+      minHeight: 500,
       physics: {
         default: 'arcade',
         arcade: {
@@ -696,6 +662,7 @@ export default function WorldMap(): JSX.Element {
         },
       },
     };
+
 
     const game = new Phaser.Game(config);
     if (video) {
@@ -728,77 +695,37 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [gameScene, players]);
 
-  useEffect(() => {
-    gameScene?.updateConversationAreas(conversationAreas);
-  }, [conversationAreas, gameScene]);
+  // useEffect(() => {
+  //   gameScene?.updateConversationAreas(conversationAreas);
+  // }, [conversationAreas, gameScene]);
 
-  const newConversationModalOpen = newConversation !== undefined;
-  useEffect(() => {
-    if (newConversationModalOpen) {
-      video?.pauseGame();
-    } else {
-      video?.unPauseGame();
-    }
-  }, [video, newConversationModalOpen]);
+  // const newConversationModalOpen = newConversation !== undefined;
+  // useEffect(() => {
+  //   if (newConversationModalOpen) {
+  //     video?.pauseGame();
+  //   } else {
+  //     video?.unPauseGame();
+  //   }
+  // }, [video, newConversationModalOpen]);
 
-  const newConversationModal = useMemo(() => {
-    if (newConversation) {
-      video?.pauseGame();
-      return (
-        <NewConversationModal
-          isOpen={newConversation !== undefined}
-          closeModal={() => {
-            video?.unPauseGame();
-            setNewConversation(undefined);
-          }}
-          newConversation={newConversation}
-        />
-      );
-    }
-    return <></>;
-  }, [video, newConversation, setNewConversation]);
-
-  const [mapActive, setMapActive] = useState(false);
-
-  const handleMapButtonClick = () => {
-    console.log("HI");
-    const minimap = document.getElementById('mini-map-container');
-    const map = document.getElementById('map-container');
-
-
-    if (minimap && !mapActive && map) {
-      console.log("TRUE");
-      minimap.style.opacity = '1';
-      setMapActive(true);
-      map.style.filter = 'blur(5px)';
-    }
-
-    if (minimap && mapActive && map) {
-      console.log("False");
-      minimap.style.opacity = '0';
-      setMapActive(false);
-      map.style.filter = 'blur(0px)';
-    }
-  }
-
-  const handleMapButtonClickTest = () => {
-
-  };
+  // const newConversationModal = useMemo(() => {
+  //   if (newConversation) {
+  //     video?.pauseGame();
+  //     return (
+  //       <NewConversationModal
+  //         isOpen={newConversation !== undefined}
+  //         closeModal={() => {
+  //           video?.unPauseGame();
+  //           setNewConversation(undefined);
+  //         }}
+  //         newConversation={newConversation}
+  //       />
+  //     );
+  //   }
+  //   return <></>;
+  // }, [video, newConversation, setNewConversation]);
 
   return (
-    <div id='app-container'>
-      {newConversationModal}
-      <div id='map-container' />
-      <div id='social-container'>
-        <SocialSidebar />
-      </div>
-      <div id='map-button' role="button" 
-            onClick={handleMapButtonClick} 
-            onKeyDown={handleMapButtonClickTest}
-            tabIndex={0}>
-              Toggle Map
-              <MiniMap />
-      </div>
-    </div>
+      <div id='mini-map-container'/>
   );
 }
