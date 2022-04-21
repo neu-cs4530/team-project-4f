@@ -454,7 +454,7 @@ class CoveyGameScene extends Phaser.Scene {
       .text(
         this.game.scale.width / 2,
         this.game.scale.height / 2,
-        "You've found an empty conversation area!\nTell others what you'd like to talk about here\nby providing a topic label for the conversation.\nSpecify a topic by pressing the spacebar.",
+        "You've found an empty conversation area!\nTell others what you'd like to talk about here\nby providing a topic label for the conversation.\nSpecify a topic by pressing \'c\'.",
         { color: '#000000', backgroundColor: '#FFFFFF' },
       )
       .setScrollFactor(0)
@@ -472,8 +472,6 @@ class CoveyGameScene extends Phaser.Scene {
       }
     });
 
-    const cursorKeys = this.input.keyboard.createCursorKeys();
-    // this.cursors.push(cursorKeys); 
     this.cursors.push(
       this.input.keyboard.addKeys(
         {
@@ -501,6 +499,7 @@ class CoveyGameScene extends Phaser.Scene {
       this.input.keyboard.addKeys(
         {
           shift: Phaser.Input.Keyboard.KeyCodes.CTRL,
+          space: Phaser.Input.Keyboard.KeyCodes.C,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
@@ -584,7 +583,7 @@ class CoveyGameScene extends Phaser.Scene {
             this.emitMovement(localLastLocation);
           }
         } else {
-          if (cursorKeys.space.isDown) {
+          if (this.cursors.find(keySet => keySet.space?.isDown)) {
             const newConversation = new ConversationArea(
               conversationLabel,
               BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),
