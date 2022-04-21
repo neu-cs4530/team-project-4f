@@ -266,7 +266,6 @@ class CoveyGameScene extends Phaser.Scene {
       let targetVelocity; 
 
       if (this.getSprintStatus()) {
-        console.log(this.input.keyboard.getCaptures());
         targetVelocity = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
       } else {
@@ -454,7 +453,7 @@ class CoveyGameScene extends Phaser.Scene {
       .text(
         this.game.scale.width / 2,
         this.game.scale.height / 2,
-        "You've found an empty conversation area!\nTell others what you'd like to talk about here\nby providing a topic label for the conversation.\nSpecify a topic by pressing \'c\'.",
+        "You've found an empty conversation area!\nTell others what you'd like to talk about here\nby providing a topic label for the conversation.\nSpecify a topic by pressing 'c'.",
         { color: '#000000', backgroundColor: '#FFFFFF' },
       )
       .setScrollFactor(0)
@@ -830,7 +829,6 @@ export default function WorldMap(): JSX.Element {
   }
 
   const FTLs = getFastTravelAreas();
-  const myPlayer = players.find(player => player.id === myPlayerID);
 
   const HandleButonCLick = (FTL: FastTravelLocation) => {
     gameScene?.fastTravel(FTL);
