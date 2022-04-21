@@ -1,8 +1,9 @@
-import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
+import Phaser from 'phaser';
+import { Heading, StackDivider, VStack, Box, ListItem, UnorderedList, Button } from '@chakra-ui/react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
-import FastTravelLocation from '../../../../services/townService/src/lib/FastTravelLocation'
+import FastTravelLocation from '../../classes/FastTravelLocation';
 import getFastTravelAreas from './FastTravelConstants'
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
@@ -14,6 +15,7 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
+
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
@@ -29,6 +31,7 @@ class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     label: Phaser.GameObjects.Text;
+    sprintingLabel: Phaser.GameObjects.Text;
   };
 
   private myPlayerID: string;
@@ -36,8 +39,6 @@ class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
-
-  private fastTravelLocations: FastTravelLocation[] = getFastTravelAreas();
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -144,6 +145,13 @@ class CoveyGameScene extends Phaser.Scene {
     });
   }
 
+  fastTravel(ftl: FastTravelLocation) {
+    if(this.player) {
+      this.player.sprite.x = ftl.location.x;
+      this.player.sprite.y = ftl.location.y;
+    }
+  }
+
   updatePlayersLocations(players: Player[]) {
     if (!this.ready) {
       this.players = players;
@@ -233,11 +241,11 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
    /**
-   * Check if the shift key is held down
+   * Check if the control key is held down
    */
-  //TODO: shift key reference
   getSprintStatus() {
-    return !!this.cursors.find(keySet => keySet.shift?.isDown);
+
+    return this.cursors.find(keySet => keySet.shift?.isDown);
   }
 
   update() {
@@ -245,7 +253,7 @@ class CoveyGameScene extends Phaser.Scene {
       return;
     }
     if (this.player && this.cursors) {
-      const speed = 175;
+
       const walkSpeed = 175;
       const sprintSpeed = 250;
 
@@ -255,11 +263,15 @@ class CoveyGameScene extends Phaser.Scene {
       // Stop any previous movement from the last frame
       body.setVelocity(0);
 
-      let targetVelocity;
+      let targetVelocity; 
+
       if (this.getSprintStatus()) {
-        targetVelocity = sprintSpeed
+        console.log(this.input.keyboard.getCaptures());
+        targetVelocity = sprintSpeed;
+        this.player.sprintingLabel.setVisible(true);
       } else {
-        targetVelocity = walkSpeed
+        targetVelocity = walkSpeed;
+        this.player.sprintingLabel.setVisible(false);
       }
 
       const primaryDirection = this.getNewMovementDirection();
@@ -300,6 +312,8 @@ class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
+      this.player.sprintingLabel.setX(body.x - 30);
+      this.player.sprintingLabel.setY(body.y - 40);
       if (
         !this.lastLocation ||
         this.lastLocation.x !== body.x ||
@@ -459,7 +473,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
 
     const cursorKeys = this.input.keyboard.createCursorKeys();
-    this.cursors.push(cursorKeys);
+    // this.cursors.push(cursorKeys); 
     this.cursors.push(
       this.input.keyboard.addKeys(
         {
@@ -482,10 +496,23 @@ class CoveyGameScene extends Phaser.Scene {
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
     );
+
     this.cursors.push(
       this.input.keyboard.addKeys(
         {
-          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+          shift: Phaser.Input.Keyboard.KeyCodes.CTRL,
+        },
+        false,
+      ) as Phaser.Types.Input.Keyboard.CursorKeys,
+    );
+
+    this.cursors.push(
+      this.input.keyboard.addKeys(
+        {
+          up: Phaser.Input.Keyboard.KeyCodes.UP,
+          down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+          left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+          right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
@@ -504,9 +531,16 @@ class CoveyGameScene extends Phaser.Scene {
       // padding: {x: 20, y: 10},
       backgroundColor: '#ffffff',
     });
+    const sprintingLabel = this.add.text(spawnPoint.x , spawnPoint.y - 40, 'sprinting', {
+      font: '18px monospace',
+      color: '#000000',
+      // padding: {x: 10, y: 10},
+      backgroundColor: '#ffffff',
+    });
     this.player = {
       sprite,
       label,
+      sprintingLabel
     };
 
     /* Configure physics overlap behavior for when the player steps into
@@ -634,7 +668,7 @@ class CoveyGameScene extends Phaser.Scene {
       .text(
         16,
         16,
-        `Arrow keys to move`,
+        `WASD to move, CTRL to Sprint`,
         {
           font: '18px monospace',
           color: '#000000',
@@ -682,16 +716,6 @@ class CoveyGameScene extends Phaser.Scene {
       this.previouslyCapturedKeys = [];
     }
   }
-}
-
-export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
-  player.location = { 
-    x: ftl.location.x, 
-    y: ftl.location.y,
-    rotation: player.location?.rotation || 'front', 
-    moving: player.location?.moving || false
-  };
-  return true;
 }
 
 export default function WorldMap(): JSX.Element {
@@ -782,28 +806,35 @@ export default function WorldMap(): JSX.Element {
     }
     return <></>;
   }, [video, newConversation, setNewConversation]);
-
   const [mapActive, setMapActive] = useState(false);
 
+
   const handleMapButtonClick = () => {
-    console.log("HI");
+    
     const minimap = document.getElementById('mini-map-container');
     const map = document.getElementById('map-container');
 
 
     if (minimap && !mapActive && map) {
-      console.log("TRUE");
+      
       minimap.style.opacity = '1';
       setMapActive(true);
       map.style.filter = 'blur(5px)';
     }
 
     if (minimap && mapActive && map) {
-      console.log("False");
+      
       minimap.style.opacity = '0';
       setMapActive(false);
       map.style.filter = 'blur(0px)';
     }
+  }
+
+  const FTLs = getFastTravelAreas();
+  const myPlayer = players.find(player => player.id === myPlayerID);
+
+  const HandleButonCLick = (FTL: FastTravelLocation) => {
+    gameScene?.fastTravel(FTL);
   }
 
   const handleMapButtonClickTest = () => {
@@ -818,11 +849,35 @@ export default function WorldMap(): JSX.Element {
         <SocialSidebar />
       </div>
       <div id='map-button' role="button" 
-            onClick={handleMapButtonClick} 
-            onKeyDown={handleMapButtonClickTest}
-            tabIndex={0}>
-              Toggle Map
-              <MiniMap />
+      onClick={handleMapButtonClick} 
+      onKeyDown={handleMapButtonClickTest}
+      tabIndex={0}>
+        Toggle Map
+        <MiniMap />
+      </div>
+      <div id='ftl-container'>
+      <VStack align="left"
+        spacing={2}
+        border='2px'
+        padding={2}
+        marginLeft={2}
+        borderColor='gray.500'
+        height='100%'
+        divider={<StackDivider borderColor='gray.200' />}
+        borderRadius='4px'>
+          <Heading fontSize='xl' as='h1'>Fast Travel Locations</Heading>
+      <Box>
+          <UnorderedList spacing = {1} styleType = "none">
+            {FTLs.map(FTL => (
+              <ListItem key={FTL.FTLName}>
+                <Button key={FTL.FTLName} border='1px' borderColor='black,500' onClick={() => HandleButonCLick(FTL)}>
+                {FTL.FTLName}
+              </Button>
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </Box>
+        </VStack>
       </div>
     </div>
   );

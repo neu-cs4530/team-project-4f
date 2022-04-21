@@ -232,12 +232,12 @@ export default class CoveyTownController {
 
   removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
 
-    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName) ?? new FastTravelLocation('', new BoundingBox(0, 0, 0, 0));
-   
-    this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
-    this._listeners.forEach(listener => listener.onFastTravelDeleted(target));
-    
-  
+    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName) 
+
+    if(target){
+      this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
+      this._listeners.forEach(listener => listener.onFastTravelDeleted(target));
+    }
     return target;
   }
 

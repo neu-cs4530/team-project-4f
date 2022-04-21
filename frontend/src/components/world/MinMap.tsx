@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
@@ -8,13 +8,61 @@ import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
-import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
-import NewConversationModal from './NewCoversationModal';
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
+const TRIC = {
+  name: 'Triceratops',
+  x: 275, 
+  y: 225
+}
+const ARMLESS_FTL = {
+  name:' Armless \n Skeleton', 
+  x: 1500, 
+  y: 450
+};
+const VASES_FTL = {
+  name: 'Vase Room', 
+  x: 700,
+  y: 500
+};
+const LEFT_FOYER_FTL = {
+  name: 'Left End\n of Foyer', 
+  x: 330,
+  y: 995
+};
+
+const RIGHT_FOYER_FTL = {
+  name:'Right End\n of Foyer', 
+  x: 2020, 
+  y: 995
+};
+
+const CONFERENCE_HALL_FTL = {
+  name: 'Conference\n   Hall', 
+  x: 2030,
+  y: 450
+};
+
+const ATRIUM_ENTRANCE_FTL = {
+  name: ' Atrium\nEntrance',
+  x: 2560, 
+  y: 700
+};
+const ATRIUM_BACK_FTL = {
+  name: 'Back of \n Atrium', 
+  x: 3000, 
+  y: 380
+};
+const BASEMENT_FTL = {
+  name: 'Basement',
+  x: 3030, 
+  y: 1200
+};
+
+const locationTitles = [TRIC, ARMLESS_FTL, VASES_FTL, LEFT_FOYER_FTL, RIGHT_FOYER_FTL, CONFERENCE_HALL_FTL, ATRIUM_ENTRANCE_FTL, ATRIUM_BACK_FTL, BASEMENT_FTL];
 type ConversationGameObjects = {
   labelText: Phaser.GameObjects.Text;
   topicText: Phaser.GameObjects.Text;
@@ -140,184 +188,6 @@ class CoveyGameScene extends Phaser.Scene {
     });
   }
 
-  updatePlayersLocations(players: Player[]) {
-    if (!this.ready) {
-      this.players = players;
-      return;
-    }
-    players.forEach(p => {
-      this.updatePlayerLocation(p);
-    });
-    // Remove disconnected players from board
-    const disconnectedPlayers = this.players.filter(
-      player => !players.find(p => p.id === player.id),
-    );
-    disconnectedPlayers.forEach(disconnectedPlayer => {
-      if (disconnectedPlayer.sprite) {
-        disconnectedPlayer.sprite.destroy();
-        disconnectedPlayer.label?.destroy();
-      }
-    });
-    // Remove disconnected players from list
-    if (disconnectedPlayers.length) {
-      this.players = this.players.filter(
-        player => !disconnectedPlayers.find(p => p.id === player.id),
-      );
-    }
-  }
-
-  updatePlayerLocation(player: Player) {
-    let myPlayer = this.players.find(p => p.id === player.id);
-    if (!myPlayer) {
-      let { location } = player;
-      if (!location) {
-        location = {
-          rotation: 'back',
-          moving: false,
-          x: 0,
-          y: 0,
-        };
-      }
-      myPlayer = new Player(player.id, player.userName, location);
-      this.players.push(myPlayer);
-    }
-    if (this.myPlayerID !== myPlayer.id && this.physics && player.location) {
-      let { sprite } = myPlayer;
-      if (!sprite) {
-        sprite = this.physics.add
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore - JB todo
-          .sprite(0, 0, 'atlas', 'misa-front')
-          .setSize(30, 40)
-          .setOffset(0, 24);
-        const label = this.add.text(0, 0, myPlayer.userName, {
-          font: '18px monospace',
-          color: '#000000',
-          backgroundColor: '#ffffff',
-        });
-        myPlayer.label = label;
-        myPlayer.sprite = sprite;
-      }
-      if (!sprite.anims) return;
-      sprite.setX(player.location.x);
-      sprite.setY(player.location.y);
-      myPlayer.label?.setX(player.location.x);
-      myPlayer.label?.setY(player.location.y - 20);
-      if (player.location.moving) {
-        sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
-      } else {
-        sprite.anims.stop();
-        sprite.setTexture('atlas', `misa-${player.location.rotation}`);
-      }
-    }
-  }
-
-  getNewMovementDirection() {
-    if (this.cursors.find(keySet => keySet.left?.isDown)) {
-      return 'left';
-    }
-    if (this.cursors.find(keySet => keySet.right?.isDown)) {
-      return 'right';
-    }
-    if (this.cursors.find(keySet => keySet.down?.isDown)) {
-      return 'front';
-    }
-    if (this.cursors.find(keySet => keySet.up?.isDown)) {
-      return 'back';
-    }
-    return undefined;
-  }
-
-  update() {
-    if (this.paused) {
-      return;
-    }
-    if (this.player && this.cursors) {
-      const speed = 175;
-
-      const prevVelocity = this.player.sprite.body.velocity.clone();
-      const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
-
-      // Stop any previous movement from the last frame
-      body.setVelocity(0);
-
-      const primaryDirection = this.getNewMovementDirection();
-      switch (primaryDirection) {
-        case 'left':
-          body.setVelocityX(-speed);
-          this.player.sprite.anims.play('misa-left-walk', true);
-          break;
-        case 'right':
-          body.setVelocityX(speed);
-          this.player.sprite.anims.play('misa-right-walk', true);
-          break;
-        case 'front':
-          body.setVelocityY(speed);
-          this.player.sprite.anims.play('misa-front-walk', true);
-          break;
-        case 'back':
-          body.setVelocityY(-speed);
-          this.player.sprite.anims.play('misa-back-walk', true);
-          break;
-        default:
-          // Not moving
-          this.player.sprite.anims.stop();
-          // If we were moving, pick and idle frame to use
-          if (prevVelocity.x < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-left');
-          } else if (prevVelocity.x > 0) {
-            this.player.sprite.setTexture('atlas', 'misa-right');
-          } else if (prevVelocity.y < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-back');
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
-          break;
-      }
-
-      // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize().scale(speed);
-
-      const isMoving = primaryDirection !== undefined;
-      this.player.label.setX(body.x);
-      this.player.label.setY(body.y - 20);
-      if (
-        !this.lastLocation ||
-        this.lastLocation.x !== body.x ||
-        this.lastLocation.y !== body.y ||
-        (isMoving && this.lastLocation.rotation !== primaryDirection) ||
-        this.lastLocation.moving !== isMoving
-      ) {
-        if (!this.lastLocation) {
-          this.lastLocation = {
-            x: body.x,
-            y: body.y,
-            rotation: primaryDirection || 'front',
-            moving: isMoving,
-          };
-        }
-        this.lastLocation.x = body.x;
-        this.lastLocation.y = body.y;
-        this.lastLocation.rotation = primaryDirection || 'front';
-        this.lastLocation.moving = isMoving;
-        if (this.currentConversationArea) {
-          if(this.currentConversationArea.conversationArea){
-            this.lastLocation.conversationLabel = this.currentConversationArea.label;
-          }
-          if (
-            !Phaser.Geom.Rectangle.Overlaps(
-              this.currentConversationArea.sprite.getBounds(),
-              this.player.sprite.getBounds(),
-            )
-          ) {
-            this.infoTextBox?.setVisible(false);
-            this.currentConversationArea = undefined;
-            this.lastLocation.conversationLabel = undefined;
-          }
-        }
-        this.emitMovement(this.lastLocation);
-      }
-    }
-  }
-
   create() {
     const map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
 
@@ -353,7 +223,6 @@ class CoveyGameScene extends Phaser.Scene {
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
      it a depth. Higher depths will sit on top of lower depth objects.
      */
-    belowLayer.setDepth(0);
     worldLayer.setDepth(5);
     aboveLayer.setDepth(10);
     veryAboveLayer.setDepth(15);
@@ -413,6 +282,11 @@ class CoveyGameScene extends Phaser.Scene {
       });
     });
 
+    
+    locationTitles.forEach(loc => {
+      this.add.text(loc.x, loc.y, loc.name, {fontSize: '55px', backgroundColor: 'green', color: 'white'})
+      .setDepth(30);
+    });
     this.infoTextBox = this.add
       .text(
         this.game.scale.width / 2,
@@ -448,17 +322,6 @@ class CoveyGameScene extends Phaser.Scene {
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
     );
-    this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          up: Phaser.Input.Keyboard.KeyCodes.H,
-          down: Phaser.Input.Keyboard.KeyCodes.J,
-          left: Phaser.Input.Keyboard.KeyCodes.K,
-          right: Phaser.Input.Keyboard.KeyCodes.L,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
 
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
@@ -467,7 +330,8 @@ class CoveyGameScene extends Phaser.Scene {
       .sprite(spawnPoint.x, spawnPoint.y, 'atlas', 'misa-front')
       .setSize(30, 40)
       .setOffset(0, 24);
-    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, '(You)', {
+
+    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, '', {
       font: '18px monospace',
       color: '#000000',
       // padding: {x: 20, y: 10},
@@ -477,6 +341,8 @@ class CoveyGameScene extends Phaser.Scene {
       sprite,
       label,
     };
+    // turn player off.
+    sprite.visible = false;
 
     /* Configure physics overlap behavior for when the player steps into
     a transporter area. If you enter a transporter and press 'space', you'll
@@ -531,15 +397,6 @@ class CoveyGameScene extends Phaser.Scene {
       },
     );
 
-    this.emitMovement({
-      rotation: 'front',
-      moving: false,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - JB todo
-      x: spawnPoint.x,
-      y: spawnPoint.y,
-    });
-
     // Watch the player and worldLayer for collisions, for the duration of the scene:
     this.physics.add.collider(sprite, worldLayer);
     this.physics.add.collider(sprite, wallsLayer);
@@ -548,51 +405,6 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Create the player's walking animations from the texture atlas. These are stored in the global
     // animation manager so any sprite can access them.
-    const { anims } = this;
-    anims.create({
-      key: 'misa-left-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-left-walk.',
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    anims.create({
-      key: 'misa-right-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-right-walk.',
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    anims.create({
-      key: 'misa-front-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-front-walk.',
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    anims.create({
-      key: 'misa-back-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-back-walk.',
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
 
     const mapcamera = this.cameras.add(0, 0,3000, 400).setZoom(.3).setName('mini');
     mapcamera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -603,7 +415,6 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      this.players.forEach(p => this.updatePlayerLocation(p));
     }
     // Call any listeners that are waiting for the game to be initialized
     this._onGameReadyListeners.forEach(listener => listener());
@@ -613,24 +424,12 @@ class CoveyGameScene extends Phaser.Scene {
   pause() {
     if (!this.paused) {
       this.paused = true;
-      if(this.player){
-        this.player?.sprite.anims.stop();
-        const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
-        body.setVelocity(0);
-      }
-      this.previouslyCapturedKeys = this.input.keyboard.getCaptures();
-      this.input.keyboard.clearCaptures();
     }
   }
 
   resume() {
     if (this.paused) {
       this.paused = false;
-      if (Video.instance()) {
-        // If the game is also in process of being torn down, the keyboard could be undefined
-        this.input.keyboard.addCapture(this.previouslyCapturedKeys);
-      }
-      this.previouslyCapturedKeys = [];
     }
   }
 }
@@ -638,11 +437,9 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const { emitMovement, myPlayerID } = useCoveyAppState();
-  const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
-  const playerMovementCallbacks = usePlayerMovement();
-  const players = usePlayersInTown();
+
 
   useEffect(() => {
     const config = {
@@ -680,50 +477,6 @@ export default function WorldMap(): JSX.Element {
       game.destroy(true);
     };
   }, [video, emitMovement, setNewConversation, myPlayerID]);
-
-  useEffect(() => {
-    const movementDispatcher = (player: ServerPlayer) => {
-      gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
-    };
-    playerMovementCallbacks.push(movementDispatcher);
-    return () => {
-      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
-    };
-  }, [gameScene, playerMovementCallbacks]);
-
-  useEffect(() => {
-    gameScene?.updatePlayersLocations(players);
-  }, [gameScene, players]);
-
-  // useEffect(() => {
-  //   gameScene?.updateConversationAreas(conversationAreas);
-  // }, [conversationAreas, gameScene]);
-
-  // const newConversationModalOpen = newConversation !== undefined;
-  // useEffect(() => {
-  //   if (newConversationModalOpen) {
-  //     video?.pauseGame();
-  //   } else {
-  //     video?.unPauseGame();
-  //   }
-  // }, [video, newConversationModalOpen]);
-
-  // const newConversationModal = useMemo(() => {
-  //   if (newConversation) {
-  //     video?.pauseGame();
-  //     return (
-  //       <NewConversationModal
-  //         isOpen={newConversation !== undefined}
-  //         closeModal={() => {
-  //           video?.unPauseGame();
-  //           setNewConversation(undefined);
-  //         }}
-  //         newConversation={newConversation}
-  //       />
-  //     );
-  //   }
-  //   return <></>;
-  // }, [video, newConversation, setNewConversation]);
 
   return (
       <div id='mini-map-container'/>
