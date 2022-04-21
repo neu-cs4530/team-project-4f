@@ -1,6 +1,6 @@
+import React, { useEffect, useMemo, useState } from 'react';
 import Phaser from 'phaser';
 import { Heading, StackDivider, VStack, Box, ListItem, UnorderedList, Button } from '@chakra-ui/react';
-import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import FastTravelLocation from '../../classes/FastTravelLocation';
@@ -240,11 +240,11 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
    /**
-   * Check if the shift key is held down
+   * Check if the control key is held down
    */
   getSprintStatus() {
-    return this.cursors.find(keySet => keySet.shift?.isDown);
 
+    return this.cursors.find(keySet => keySet.shift?.isDown);
   }
 
   update() {
@@ -262,17 +262,15 @@ class CoveyGameScene extends Phaser.Scene {
       // Stop any previous movement from the last frame
       body.setVelocity(0);
 
-      let targetVelocity;
+      let targetVelocity; 
 
       if (this.getSprintStatus()) {
+        console.log(this.input.keyboard.getCaptures());
         targetVelocity = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
-        this.player.sprintingLabel.setX(body.x - 30);
-        this.player.sprintingLabel.setY(body.y - 40);
       } else {
         targetVelocity = walkSpeed;
         this.player.sprintingLabel.setVisible(false);
-
       }
 
       const primaryDirection = this.getNewMovementDirection();
@@ -313,6 +311,8 @@ class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
+      this.player.sprintingLabel.setX(body.x - 30);
+      this.player.sprintingLabel.setY(body.y - 40);
       if (
         !this.lastLocation ||
         this.lastLocation.x !== body.x ||
@@ -472,7 +472,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
 
     const cursorKeys = this.input.keyboard.createCursorKeys();
-    this.cursors.push(cursorKeys);
+    // this.cursors.push(cursorKeys); 
     this.cursors.push(
       this.input.keyboard.addKeys(
         {
@@ -495,10 +495,23 @@ class CoveyGameScene extends Phaser.Scene {
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
     );
+
     this.cursors.push(
       this.input.keyboard.addKeys(
         {
-          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+          shift: Phaser.Input.Keyboard.KeyCodes.CTRL,
+        },
+        false,
+      ) as Phaser.Types.Input.Keyboard.CursorKeys,
+    );
+
+    this.cursors.push(
+      this.input.keyboard.addKeys(
+        {
+          up: Phaser.Input.Keyboard.KeyCodes.UP,
+          down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+          left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+          right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
@@ -654,7 +667,7 @@ class CoveyGameScene extends Phaser.Scene {
       .text(
         16,
         16,
-        `Arrow keys to move`,
+        `WASD to move, CTRL to Sprint`,
         {
           font: '18px monospace',
           color: '#000000',
