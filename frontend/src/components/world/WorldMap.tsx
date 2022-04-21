@@ -15,6 +15,7 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
+
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
@@ -866,9 +867,10 @@ export default function WorldMap(): JSX.Element {
         borderRadius='4px'>
           <Heading fontSize='xl' as='h1'>Fast Travel Locations</Heading>
       <Box>
-          <UnorderedList>
+          <UnorderedList spacing = {1} styleType = "none">
             {FTLs.map(FTL => (
-              <ListItem key={FTL.FTLName}> <Button key={FTL.FTLName} colorScheme='blue' onClick={() => HandleButonCLick(FTL)}>
+              <ListItem key={FTL.FTLName}>
+                <Button key={FTL.FTLName} border='1px' borderColor='black,500' onClick={() => HandleButonCLick(FTL)}>
                 {FTL.FTLName}
               </Button>
               </ListItem>
