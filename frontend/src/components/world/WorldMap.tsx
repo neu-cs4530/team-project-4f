@@ -26,7 +26,7 @@ type ConversationGameObjects = {
   conversationArea?: ConversationArea;
 };
 
-export class CoveyGameScene extends Phaser.Scene {
+class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     label: Phaser.GameObjects.Text;
@@ -38,8 +38,6 @@ export class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
-
-  private fastTravelLocations: FastTravelLocation[] = getFastTravelAreas();
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -704,19 +702,6 @@ export class CoveyGameScene extends Phaser.Scene {
       this.previouslyCapturedKeys = [];
     }
   }
-}
-
-export function useFastTravelLocation(ftl: FastTravelLocation, player: Player) {
-  if(player.sprite) {
-    player.sprite.x = ftl.location.x;
-    player.sprite.y = ftl.location.x;
-  }
-  player.location = { 
-    x: ftl.location.x, 
-    y: ftl.location.y,
-    rotation: player.location?.rotation || 'front', 
-    moving: player.location?.moving || false
-  };
 }
 
 export default function WorldMap(): JSX.Element {
