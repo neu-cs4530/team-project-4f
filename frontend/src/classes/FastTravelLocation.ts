@@ -1,4 +1,4 @@
-import { BoundingBox } from '../client/TownsServiceClient';
+import  BoundingBox  from './BoundingBox';
 
 /**
  * The FastTravelLocation implements the logic for each fast travel location: managing the various events that
@@ -7,7 +7,7 @@ import { BoundingBox } from '../client/TownsServiceClient';
 export default class FastTravelLocation {
   
   private _location: BoundingBox;
-
+  
   private _FTLName: string;
 
   get FTLName(): string {
