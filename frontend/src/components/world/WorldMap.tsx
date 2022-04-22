@@ -241,16 +241,10 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   /**
-   * Check if the shift key is held down along with a movement key
+   * Check if the shift key is held down
    */
   getSprintStatus() {
-    if (this.cursors.find(keySet => keySet.shift?.isDown)) {
-      return this.cursors.find(keySet => keySet.up?.isDown)
-        || this.cursors.find(keySet => keySet.left?.isDown)
-        || this.cursors.find(keySet => keySet.right?.isDown)
-        || this.cursors.find(keySet => keySet.down?.isDown)
-    }
-    return false
+    return this.cursors.find(keySet => keySet.shift?.isDown)
   }
 
   update() {
