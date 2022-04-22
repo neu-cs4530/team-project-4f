@@ -240,12 +240,11 @@ class CoveyGameScene extends Phaser.Scene {
     return undefined;
   }
 
-   /**
-   * Check if the control key is held down
+  /**
+   * Check if the shift key is held down
    */
   getSprintStatus() {
-
-    return this.cursors.find(keySet => keySet.shift?.isDown);
+    return this.cursors.find(keySet => keySet.shift?.isDown)
   }
 
   update() {
@@ -255,7 +254,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.player && this.cursors) {
 
       const walkSpeed = 175;
-      const sprintSpeed = 250;
+      const sprintSpeed = 350;
 
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
@@ -263,32 +262,32 @@ class CoveyGameScene extends Phaser.Scene {
       // Stop any previous movement from the last frame
       body.setVelocity(0);
 
-      let targetVelocity; 
+      let targetSpeed;
 
       if (this.getSprintStatus()) {
-        targetVelocity = sprintSpeed;
+        targetSpeed = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
       } else {
-        targetVelocity = walkSpeed;
+        targetSpeed = walkSpeed;
         this.player.sprintingLabel.setVisible(false);
       }
 
       const primaryDirection = this.getNewMovementDirection();
       switch (primaryDirection) {
         case 'left':
-          body.setVelocityX(-targetVelocity);
+          body.setVelocityX(-targetSpeed);
           this.player.sprite.anims.play('misa-left-walk', true);
           break;
         case 'right':
-          body.setVelocityX(targetVelocity);
+          body.setVelocityX(targetSpeed);
           this.player.sprite.anims.play('misa-right-walk', true);
           break;
         case 'front':
-          body.setVelocityY(targetVelocity);
+          body.setVelocityY(targetSpeed);
           this.player.sprite.anims.play('misa-front-walk', true);
           break;
         case 'back':
-          body.setVelocityY(-targetVelocity);
+          body.setVelocityY(-targetSpeed);
           this.player.sprite.anims.play('misa-back-walk', true);
           break;
         default:
@@ -306,7 +305,7 @@ class CoveyGameScene extends Phaser.Scene {
       }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize().scale(targetVelocity);
+      this.player.sprite.body.velocity.normalize().scale(targetSpeed);
 
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
@@ -352,7 +351,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  
+
 
   create() {
     const map = this.make.tilemap({ key: 'map' });
@@ -491,14 +490,6 @@ class CoveyGameScene extends Phaser.Scene {
           down: Phaser.Input.Keyboard.KeyCodes.J,
           left: Phaser.Input.Keyboard.KeyCodes.K,
           right: Phaser.Input.Keyboard.KeyCodes.L,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
-    this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
@@ -796,20 +787,20 @@ export default function WorldMap(): JSX.Element {
 
 
   const handleMapButtonClick = () => {
-    
+
     const minimap = document.getElementById('mini-map-container');
     const map = document.getElementById('map-container');
 
 
     if (minimap && !mapActive && map) {
-      
+
       minimap.style.opacity = '1';
       setMapActive(true);
       map.style.filter = 'blur(5px)';
     }
 
     if (minimap && mapActive && map) {
-      
+
       minimap.style.opacity = '0';
       setMapActive(false);
       map.style.filter = 'blur(0px)';
@@ -833,8 +824,8 @@ export default function WorldMap(): JSX.Element {
       <div id='social-container'>
         <SocialSidebar />
       </div>
-      <div id='map-button' role="button" 
-      onClick={handleMapButtonClick} 
+      <div id='map-button' role="button"
+      onClick={handleMapButtonClick}
       onKeyDown={handleMapButtonClickTest}
       tabIndex={0}>
         Toggle Map
