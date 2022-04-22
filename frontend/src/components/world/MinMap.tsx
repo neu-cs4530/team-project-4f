@@ -306,20 +306,6 @@ class CoveyGameScene extends Phaser.Scene {
       }
     });
 
-    const cursorKeys = this.input.keyboard.createCursorKeys();
-    this.cursors.push(cursorKeys);
-    this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          up: Phaser.Input.Keyboard.KeyCodes.W,
-          down: Phaser.Input.Keyboard.KeyCodes.S,
-          left: Phaser.Input.Keyboard.KeyCodes.A,
-          right: Phaser.Input.Keyboard.KeyCodes.D,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
-
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
     // player's body.
@@ -367,32 +353,6 @@ class CoveyGameScene extends Phaser.Scene {
         }
       }
     });
-    this.physics.add.overlap(
-      sprite,
-      conversationSprites,
-      (overlappingPlayer, conversationSprite) => {
-        const conversationLabel = conversationSprite.name;
-        const conv = this.conversationAreas.find(area => area.label === conversationLabel);
-        this.currentConversationArea = conv;
-        if (conv?.conversationArea) {
-          this.infoTextBox?.setVisible(false);
-          const localLastLocation = this.lastLocation;
-          if(localLastLocation && localLastLocation.conversationLabel !== conv.conversationArea.label){
-            localLastLocation.conversationLabel = conv.conversationArea.label;
-            this.emitMovement(localLastLocation);
-          }
-        } else {
-          if (cursorKeys.space.isDown) {
-            const newConversation = new ConversationArea(
-              conversationLabel,
-              BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),
-            );
-            this.setNewConversation(newConversation);
-          }
-          this.infoTextBox?.setVisible(true);
-        }
-      },
-    );
 
     // Watch the player and worldLayer for collisions, for the duration of the scene:
     this.physics.add.collider(sprite, worldLayer);
