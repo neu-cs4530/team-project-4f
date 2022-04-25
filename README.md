@@ -45,3 +45,18 @@ Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWN
 
 In the `frontend` directory, run `npm start` (again, you'll need to run `npm install` the very first time). After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally.
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
+
+
+## New Features - Mini Map
+
+This extension was completed by Group 4F during the spring semester of the Spring 2022 Software Engineering class at Northeastern University.
+
+### Deploying Feature
+To utalize this feature, start the application as previously mentioned.
+
+### Using the Feature
+When starting the application and connecting to the world, the user will see a new button on the top right of the Map view. The 'Toggle Map' tan button, when pressed, will toggle a map of the whole map to cover the screen and blur the Map object.
+
+From here, the user can look at the map and view teleportation locations that have been created. (If there are no fast travel locations a map with no locations can be easily adjusted by removing the fast travel constants at the top of the MinMap file.
+
+Hitting the toggle map button again will return the user to the traditional game view.
