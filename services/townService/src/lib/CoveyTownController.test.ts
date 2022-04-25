@@ -288,5 +288,25 @@ describe('CoveyTownController', () => {
       testingTown.updatePlayerLocation(player, newLocation);
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
     });
+
   });
+  describe('sprintToggled', () =>{
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `sprint test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should be able to change speed if shift key is held down', async ()=>{
+      const player = new Player('testPlayer')
+      await testingTown.addPlayer(player);
+      
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      testingTown.onSprintToggled();
+      expect(mockListener.onSprintToggled).toBeCalled();
+      
+
+    }); 
+  }); 
 });

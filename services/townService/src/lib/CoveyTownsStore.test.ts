@@ -4,6 +4,7 @@ import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage } from '../CoveyTypes';
+import FastTravelLocation from './FastTravelLocation';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
@@ -29,6 +30,16 @@ function mockCoveyListener(): CoveyTownListener {
     onChatMessage(message: ChatMessage){
       mockCoveyListenerOtherFns(message);
     },
+    onSprintToggled(){},
+    onFastTravelAdded(_fastTravelLocation: FastTravelLocation) {
+      mockCoveyListenerOtherFns(_fastTravelLocation);
+    },
+    onFastTravelDeleted(_fastTravelLocation: FastTravelLocation){
+      mockCoveyListenerOtherFns(_fastTravelLocation);
+    },
+    onFastTravelUsed(_fastTravelLocation: FastTravelLocation){
+      mockCoveyListenerOtherFns(_fastTravelLocation);
+    }
   };
 }
 
