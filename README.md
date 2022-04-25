@@ -47,16 +47,37 @@ In the `frontend` directory, run `npm start` (again, you'll need to run `npm ins
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
 
 
-## New Features - Mini Map
+## New Features
 
-This extension was completed by Group 4F during the spring semester of the Spring 2022 Software Engineering class at Northeastern University.
+This section describes feature extensions completed by Group 4F during the spring semester of the Spring 2022 Software Engineering class at Northeastern University.
 
-### Deploying Feature
-To utalize this feature, start the application as previously mentioned.
+### Feature 1: Mini Map
+A toggleable world map with points of interests.
 
-### Using the Feature
+#### Deploying Feature
+To utilize this feature, start the application as previously mentioned.
+
+#### Using the Feature
 When starting the application and connecting to the world, the user will see a new button on the top right of the Map view. The 'Toggle Map' tan button, when pressed, will toggle a map of the whole map to cover the screen and blur the Map object.
 
 From here, the user can look at the map and view teleportation locations that have been created. (If there are no fast travel locations a map with no locations can be easily adjusted by removing the fast travel constants at the top of the MinMap file.
 
 Hitting the toggle map button again will return the user to the traditional game view.
+
+### Feature 2: Fast Travel
+Teleporting to pre-defined location in town.
+
+#### Deploying Feature
+To utilize this feature, start the application as previously mentioned.
+
+#### Using the Feature
+After starting Covey.Town, user will notice a new panel containing several buttons. These buttons represents available fast travel locations within the current town. Users can then click on any one of these buttons to be teleported to the location they selected. This ability currently have no cooldown timer, no location and privilege restrictions. Player can engage in fast travel wherever and whenever they want, for unlimited number of times.
+
+### Feature 3: Sprinting
+Hold down left Shift key to move faster.
+
+#### Deploying Feature
+To utilize this feature, start the application as previously mentioned.
+
+#### Using the Feature
+After starting Covey.Town, user can use WASD, HJKL, and arrow keys to move. They can also hold down left Shift key while moving to move at twice the speed.
