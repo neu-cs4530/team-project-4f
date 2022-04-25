@@ -12,6 +12,10 @@ The frontend implements video chat using the [Twilio Programmable Video](https:/
 
 A backend service (in the `services/townService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
 
+## Accessing the app remotely
+
+The latest version of the app is hosted on [Netlify](https://silly-brahmagupta-8243b8.netlify.app/). Going to that link will give you access to our Covey Town features without needing to run the app locally.
+
 ## Running this app locally
 
 Running the application locally entails running both the backend service and a frontend.
