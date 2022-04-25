@@ -64,6 +64,12 @@ From here, the user can look at the map and view teleportation locations that ha
 
 Hitting the toggle map button again will return the user to the traditional game view.
 
+#### Adding new Fast Travel locations
+To add new Points of interests:
+1. Navigate to /frontend/src/components/world/MinMap.tsx
+2. Add points of interests as constant to the top section of the file. including its name and its x and y location on the Map
+3. Add the newly added constant into the list constant locationTitles within the same file.
+
 ### Feature 2: Fast Travel
 Teleporting to pre-defined location in town.
 
@@ -73,6 +79,13 @@ To utilize this feature, start the application as previously mentioned.
 #### Using the Feature
 After starting Covey.Town, user will notice a new panel containing several buttons. These buttons represents available fast travel locations within the current town. Users can then click on any one of these buttons to be teleported to the location they selected. This ability currently have no cooldown timer, no location and privilege restrictions. Player can engage in fast travel wherever and whenever they want, for unlimited number of times.
 
+#### Adding new Fast Travel locations
+To add new Fast Travel Locations:
+1. Navigate to /frontend/src/components/world/FastTravelConstants.ts
+2. Add location as constant, including its name and a boundingBox specifying its location and size (for use if/when location restriction is implemented)
+3. Add the newly added constant into the getFastTravelAreas function within the same file.
+4. Add the new location's label on the minimap in the MinMap.tsx file within the same folder. See above for detailed instructions.
+
 ### Feature 3: Sprinting
 Hold down left Shift key to move faster.
 
@@ -81,3 +94,8 @@ To utilize this feature, start the application as previously mentioned.
 
 #### Using the Feature
 After starting Covey.Town, user can use WASD, HJKL, and arrow keys to move. They can also hold down left Shift key while moving to move at twice the speed.
+
+#### Changing sprint speed
+To change sprint speed
+1. Navigate to /frontend/src/components/world/WorldMap.tsx
+2. Change the sprintSpeed constant in the update() function currently at line 257
