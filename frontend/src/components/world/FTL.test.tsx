@@ -6,8 +6,8 @@ describe('testValidFTL', () => {
     it('Should allow all different kinds of location', () => {
         const FTL0 = new FastTravelLocation('FTL0', new BoundingBox(0,0,0,0));
         const FTL1 = new FastTravelLocation('FTL1', new BoundingBox(1,1,-1,-1));
-        const FTL2 = new FastTravelLocation('FTL1', new BoundingBox(1.5,1.5,0.5,0.5));
-        const FTL3 = new FastTravelLocation('FTL1', new BoundingBox(99,-99,-99,99));
+        const FTL2 = new FastTravelLocation('FTL2', new BoundingBox(1.5,1.5,0.5,0.5));
+        const FTL3 = new FastTravelLocation('FTL3', new BoundingBox(99,-99,-99,99));
         expect(FTL0).toBeInstanceOf(FastTravelLocation);
         expect(FTL1).toBeInstanceOf(FastTravelLocation);
         expect(FTL2).toBeInstanceOf(FastTravelLocation);
