@@ -232,9 +232,9 @@ export default class CoveyTownController {
 
   removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
 
-    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName) 
+    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName);
 
-    if(target){
+    if (target){
       this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
       this._listeners.forEach(listener => listener.onFastTravelDeleted(target));
     }
@@ -283,7 +283,10 @@ export default class CoveyTownController {
 
   onSprintToggled(): void {
     this._listeners.forEach(listener => listener.onSprintToggled());
-    // TODO: Add call that toggles the sprinting (Task-14)
+  }
+
+  onFastTravelUsed(fastTravelLocation: string): void {
+    this._listeners.forEach(listener => listener.onFastTravelUsed(fastTravelLocation));
   }
 
   /**

@@ -239,7 +239,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onFastTravelDeleted(fastTravelLocation: FastTravelLocation){
       socket.emit('sprintToggled', fastTravelLocation);
     },
-    onFastTravelUsed(fastTravelLocation: FastTravelLocation){
+    onFastTravelUsed(fastTravelLocation: string){
       socket.emit('sprintToggled', fastTravelLocation);
     },
   };

@@ -16,6 +16,7 @@ import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
 
+
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
@@ -66,6 +67,7 @@ class CoveyGameScene extends Phaser.Scene {
   private setNewConversation: (conv: ConversationArea) => void;
 
   private _onGameReadyListeners: Callback[] = [];
+
 
   constructor(
     video: Video,
@@ -697,7 +699,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, myPlayerID } = useCoveyAppState();
+  const { emitMovement, myPlayerID, currentTownID } = useCoveyAppState();
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
@@ -722,6 +724,8 @@ export default function WorldMap(): JSX.Element {
         },
       },
     };
+
+
 
     const game = new Phaser.Game(config);
     if (video) {
@@ -748,7 +752,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
     };
-  }, [gameScene, playerMovementCallbacks]);
+  }, [gameScene, playerMovementCallbacks, currentTownID]);
 
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);

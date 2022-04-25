@@ -67,7 +67,7 @@ export default interface CoveyTownListener {
   /**
    * Called when a fast travel location is used
    */
-  onFastTravelUsed(FastTravelLocation: FastTravelLocation): void;
+  onFastTravelUsed(fastTravelName: string): void;
 
 
 }
