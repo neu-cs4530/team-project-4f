@@ -26,7 +26,6 @@
     "assert": "^2.0.0",
     "axios": "^0.21.1",
     "concurrently": "^6.5.1",
-    "covey-town-townService": "file:../services/townService",
     "cross-env": "^7.0.2",
     "d3-timer": "^1.0.10",
     "enzyme": "^3.11.0",

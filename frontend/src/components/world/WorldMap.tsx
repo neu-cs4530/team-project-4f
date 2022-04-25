@@ -15,8 +15,6 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
-import CoveyTownStore from 'covey-town-townService/src/lib/CoveyTownsStore'
-import CoveyTownController from 'covey-town-townService/src/lib/CoveyTownController'
 
 
 // Original inspiration and code from:
@@ -70,21 +68,18 @@ class CoveyGameScene extends Phaser.Scene {
 
   private _onGameReadyListeners: Callback[] = [];
 
-  private currentTownController: CoveyTownController | undefined;
 
   constructor(
     video: Video,
     emitMovement: (loc: UserLocation) => void,
     setNewConversation: (conv: ConversationArea) => void,
     myPlayerID: string,
-    currentTownID: string,
   ) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
-    this.currentTownController = CoveyTownStore.getInstance().getControllerForTown(currentTownID);
   }
 
   preload() {
@@ -154,7 +149,6 @@ class CoveyGameScene extends Phaser.Scene {
 
   fastTravel(ftl: FastTravelLocation) {
     if(this.player) {
-      this.currentTownController?.onFastTravelUsed(ftl.FTLName);
       this.player.sprite.x = ftl.location.x;
       this.player.sprite.y = ftl.location.y;
     }
@@ -273,7 +267,6 @@ class CoveyGameScene extends Phaser.Scene {
       let targetSpeed;
 
       if (this.getSprintStatus()) {
-        this.currentTownController?.onSprintToggled();
         targetSpeed = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
       } else {
@@ -736,7 +729,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID, currentTownID);
+      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
