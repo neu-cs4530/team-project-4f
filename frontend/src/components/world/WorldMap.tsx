@@ -15,8 +15,8 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
-import CoveyTownStore from '../../../../services/townService/src/lib/CoveyTownsStore'
-import CoveyTownController from '../../../../services/townService/src/lib/CoveyTownController'
+import CoveyTownStore from 'covey-town-townService/src/lib/CoveyTownsStore'
+import CoveyTownController from 'covey-town-townService/src/lib/CoveyTownController'
 
 
 // Original inspiration and code from:
