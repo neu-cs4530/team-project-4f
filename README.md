@@ -82,9 +82,6 @@ Teleporting to pre-defined location in town.
 #### Design Comments
 Fast travel locations is defined as constants in the FastTravelConstants.ts file. Each of these FTL objects has a name and a boundingBox. Bounding box is used since the original design was that player can only engage in fast travel while they are in a fast travel location. The front end implementation of fast travel is currently seperate from the minimap points of interest system due to time restrictions.
 
-1. Player sprite would not respect defined boundaries on the minimap, resulting in de-synced location between two gamescenes.
-2. We also tried removing Player sprite and only drawing other players, but we could not get these sprite to co-exist on both game scenes.
-
 #### Deploying Feature
 To utilize this feature, start the application as previously mentioned.
 
