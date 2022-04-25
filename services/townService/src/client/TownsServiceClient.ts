@@ -118,7 +118,7 @@ export interface ConversationAreaCreateRequest {
  *  Payload sent by the client to create a new Fast travel location
  * 
  */
- export interface FastTravelLocationCrateRequest {
+export interface FastTravelLocationCrateRequest {
   coveyTownID: string;
   sessionToken: string;
   FastTravelLocation: ServerConversationArea;
