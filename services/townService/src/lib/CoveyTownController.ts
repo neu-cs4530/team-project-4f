@@ -1,4 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
+import { listeners } from 'process';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -283,7 +284,10 @@ export default class CoveyTownController {
 
   onSprintToggled(): void {
     this._listeners.forEach(listener => listener.onSprintToggled());
-    // TODO: Add call that toggles the sprinting (Task-14)
+  }
+
+  onFastTravelUsed(fastTravelLocation: string): void {
+    this._listeners.forEach(listener => listener.onFastTravelUsed(fastTravelLocation));
   }
 
   /**

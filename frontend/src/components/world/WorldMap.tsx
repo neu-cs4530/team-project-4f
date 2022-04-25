@@ -15,6 +15,9 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import MiniMap from './MinMap';
+import CoveyTownStore from '../../../../services/townService/src/lib/CoveyTownsStore'
+import CoveyTownController from '../../../../services/townService/src/lib/CoveyTownController'
+
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
@@ -67,17 +70,21 @@ class CoveyGameScene extends Phaser.Scene {
 
   private _onGameReadyListeners: Callback[] = [];
 
+  private currentTownController: CoveyTownController;
+
   constructor(
     video: Video,
     emitMovement: (loc: UserLocation) => void,
     setNewConversation: (conv: ConversationArea) => void,
     myPlayerID: string,
+    currentTownID: string,
   ) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
+    this.currentTownController = CoveyTownStore.getInstance().getControllerForTown(currentTownID)!;
   }
 
   preload() {
@@ -147,6 +154,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   fastTravel(ftl: FastTravelLocation) {
     if(this.player) {
+      this.currentTownController.onFastTravelUsed(ftl.FTLName);
       this.player.sprite.x = ftl.location.x;
       this.player.sprite.y = ftl.location.y;
     }
@@ -265,6 +273,7 @@ class CoveyGameScene extends Phaser.Scene {
       let targetSpeed;
 
       if (this.getSprintStatus()) {
+        this.currentTownController.onSprintToggled();
         targetSpeed = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
       } else {
@@ -697,7 +706,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, myPlayerID } = useCoveyAppState();
+  const { emitMovement, myPlayerID, currentTownID } = useCoveyAppState();
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
@@ -722,6 +731,8 @@ export default function WorldMap(): JSX.Element {
         },
       },
     };
+
+
 
     const game = new Phaser.Game(config);
     if (video) {
