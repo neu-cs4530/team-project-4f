@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import React, { useEffect, useState } from 'react';
-import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';

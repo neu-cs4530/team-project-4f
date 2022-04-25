@@ -70,7 +70,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private _onGameReadyListeners: Callback[] = [];
 
-  private currentTownController: CoveyTownController;
+  private currentTownController: CoveyTownController | undefined;
 
   constructor(
     video: Video,
@@ -84,7 +84,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.emitMovement = emitMovement;
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
-    this.currentTownController = CoveyTownStore.getInstance().getControllerForTown(currentTownID)!;
+    this.currentTownController = CoveyTownStore.getInstance().getControllerForTown(currentTownID);
   }
 
   preload() {
@@ -154,7 +154,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   fastTravel(ftl: FastTravelLocation) {
     if(this.player) {
-      this.currentTownController.onFastTravelUsed(ftl.FTLName);
+      this.currentTownController?.onFastTravelUsed(ftl.FTLName);
       this.player.sprite.x = ftl.location.x;
       this.player.sprite.y = ftl.location.y;
     }
@@ -273,7 +273,7 @@ class CoveyGameScene extends Phaser.Scene {
       let targetSpeed;
 
       if (this.getSprintStatus()) {
-        this.currentTownController.onSprintToggled();
+        this.currentTownController?.onSprintToggled();
         targetSpeed = sprintSpeed;
         this.player.sprintingLabel.setVisible(true);
       } else {
@@ -736,7 +736,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID);
+      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID, currentTownID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -759,7 +759,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
     };
-  }, [gameScene, playerMovementCallbacks]);
+  }, [gameScene, playerMovementCallbacks, currentTownID]);
 
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);

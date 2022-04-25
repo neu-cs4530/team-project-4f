@@ -1,5 +1,4 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { listeners } from 'process';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -233,9 +232,9 @@ export default class CoveyTownController {
 
   removeFastTravelArea(_fastTravelAreaName: string): FastTravelLocation | undefined {
 
-    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName) 
+    const target = this._fastTravelAreas.find(area => area.FTLName !== _fastTravelAreaName);
 
-    if(target){
+    if (target){
       this._fastTravelAreas.filter(area => area.FTLName !== _fastTravelAreaName);
       this._listeners.forEach(listener => listener.onFastTravelDeleted(target));
     }
