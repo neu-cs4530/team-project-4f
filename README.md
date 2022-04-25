@@ -54,6 +54,11 @@ This section describes feature extensions completed by Group 4F during the sprin
 ### Feature 1: Mini Map
 A toggleable world map with points of interests.
 
+#### Design Comments
+The toggleable world map is a simplified gamescene object that exists alone and syncs with the main gamescene. Points of interests on the minimap is defined by constants in the MinMap.tsx file. Currently, player tracking and drawing has been removed from the gamescene. We tried to implement dynamic player locations on the minimap, but we encountered two issues.
+1. Player sprite would not respect defined boundaries on the minimap, resulting in de-synced location between two gamescenes.
+2. We also tried removing Player sprite and only drawing other players, but we could not get these sprite to co-exist on both game scenes.
+
 #### Deploying Feature
 To utilize this feature, start the application as previously mentioned.
 
@@ -64,14 +69,21 @@ From here, the user can look at the map and view teleportation locations that ha
 
 Hitting the toggle map button again will return the user to the traditional game view.
 
-#### Adding new Fast Travel locations
-To add new Points of interests:
+#### Adding new Points of Interests
 1. Navigate to /frontend/src/components/world/MinMap.tsx
 2. Add points of interests as constant to the top section of the file. including its name and its x and y location on the Map
 3. Add the newly added constant into the list constant locationTitles within the same file.
 
+
+
 ### Feature 2: Fast Travel
 Teleporting to pre-defined location in town.
+
+#### Design Comments
+Fast travel locations is defined as constants in the FastTravelConstants.ts file. Each of these FTL objects has a name and a boundingBox. Bounding box is used since the original design was that player can only engage in fast travel while they are in a fast travel location. The front end implementation of fast travel is currently seperate from the minimap points of interest system due to time restrictions.
+
+1. Player sprite would not respect defined boundaries on the minimap, resulting in de-synced location between two gamescenes.
+2. We also tried removing Player sprite and only drawing other players, but we could not get these sprite to co-exist on both game scenes.
 
 #### Deploying Feature
 To utilize this feature, start the application as previously mentioned.
@@ -80,14 +92,18 @@ To utilize this feature, start the application as previously mentioned.
 After starting Covey.Town, user will notice a new panel containing several buttons. These buttons represents available fast travel locations within the current town. Users can then click on any one of these buttons to be teleported to the location they selected. This ability currently have no cooldown timer, no location and privilege restrictions. Player can engage in fast travel wherever and whenever they want, for unlimited number of times.
 
 #### Adding new Fast Travel locations
-To add new Fast Travel Locations:
 1. Navigate to /frontend/src/components/world/FastTravelConstants.ts
 2. Add location as constant, including its name and a boundingBox specifying its location and size (for use if/when location restriction is implemented)
 3. Add the newly added constant into the getFastTravelAreas function within the same file.
 4. Add the new location's label on the minimap in the MinMap.tsx file within the same folder. See above for detailed instructions.
 
+
+
 ### Feature 3: Sprinting
 Hold down left Shift key to move faster.
+
+#### Design Comments
+Phaser's cursorkey detection is used to detect if Shift key is pressed in the getSprintStatus function. The movement part of update() function is updated with the capabilities detect if the user is attempting to sprint with the mentioned fucntion, and set the correct velocity.
 
 #### Deploying Feature
 To utilize this feature, start the application as previously mentioned.
@@ -96,6 +112,5 @@ To utilize this feature, start the application as previously mentioned.
 After starting Covey.Town, user can use WASD, HJKL, and arrow keys to move. They can also hold down left Shift key while moving to move at twice the speed.
 
 #### Changing sprint speed
-To change sprint speed
 1. Navigate to /frontend/src/components/world/WorldMap.tsx
 2. Change the sprintSpeed constant in the update() function currently at line 257
