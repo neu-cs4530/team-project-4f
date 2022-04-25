@@ -37,8 +37,8 @@ function mockCoveyListener(): CoveyTownListener {
     onFastTravelDeleted(_fastTravelLocation: FastTravelLocation){
       mockCoveyListenerOtherFns(_fastTravelLocation);
     },
-    onFastTravelUsed(_fastTravelLocation: FastTravelLocation){
-      mockCoveyListenerOtherFns(_fastTravelLocation);
+    onFastTravelUsed(_FTLName: string){
+      mockCoveyListenerOtherFns(_FTLName);
     }
   };
 }

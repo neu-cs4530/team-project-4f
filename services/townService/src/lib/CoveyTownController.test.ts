@@ -10,6 +10,8 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import FastTravelLocation from './FastTravelLocation';
+import BoundingBox from '../../../../frontend/src/classes/BoundingBox'
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -308,5 +310,26 @@ describe('CoveyTownController', () => {
       
 
     }); 
+    
+  }); 
+  describe('onFastTravelUsed', () =>{
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `fast travel test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should be able to change speed if shift key is held down', async ()=>{
+      // const ftl0 = new FastTravelLocation('testFTL', new BoundingBox(0,0,0,0))
+      // await testingTown.addFastTravelArea(ftl0);
+      
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      testingTown.onFastTravelUsed('testFTL');
+      expect(mockListener.onFastTravelUsed).toBeCalled();
+      
+
+    }); 
+    
   }); 
 });
